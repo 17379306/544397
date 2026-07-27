@@ -570,6 +570,28 @@
   opacity: 0;
 }
 
+.desktop-icon-badge {
+  position: absolute;
+  z-index: 5;
+  top: 4px;
+  right: 4px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 5px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: #ef4444;
+  border: 1.5px solid rgba(255, 255, 255, 0.92);
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.22);
+  font-size: calc(9.5px*var(--app-text-scale,1));
+  font-weight: 850;
+  line-height: 1;
+  pointer-events: none;
+}
+
 .icon-label {
   font-size: calc(9.9px*var(--app-text-scale,1));
   text-align: center;
