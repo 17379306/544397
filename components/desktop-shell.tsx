@@ -679,12 +679,15 @@ function pointerToGridCell(
   const colWidth = (colWidths[0] || 66) * zoom;
   const colGap = (parseFloat(computed.columnGap) || 20) * zoom;
   const rowGap = (parseFloat(computed.rowGap) || 0) * zoom;
+  /* rect 高度是 border-box（含 padding），网格行轨道只占内容盒；
+     computed padding 是布局值，参与 rect 混算前同样要乘 zoom。 */
+  const padY = ((parseFloat(computed.paddingTop) || 0) + (parseFloat(computed.paddingBottom) || 0)) * zoom;
   const contentWidth = colWidths.length * colWidth + (colWidths.length - 1) * colGap;
   const originX = rect.left + (rect.width - contentWidth) / 2;
-  const originY = rect.top;
+  const originY = rect.top + (parseFloat(computed.paddingTop) || 0) * zoom;
   const colStep = colWidth + colGap;
   const totalRowGap = (GRID_ROWS - 1) * rowGap;
-  const rowHeight = (rect.height - totalRowGap) / GRID_ROWS;
+  const rowHeight = (rect.height - padY - totalRowGap) / GRID_ROWS;
   const rowStep = rowHeight + rowGap;
   const col = Math.floor((px - originX) / colStep);
   const row = Math.floor((py - originY) / rowStep);
@@ -2294,7 +2297,10 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#121110;color:rgb
         const colW = parseFloat(cs.gridTemplateColumns.split(/\s+/)[0] || "66") * zoom;
         const colGap = (parseFloat(cs.columnGap) || 20) * zoom;
         const rowGap = (parseFloat(cs.rowGap) || 0) * zoom;
-        const rowH = (gridEl.getBoundingClientRect().height - (GRID_ROWS - 1) * rowGap) / GRID_ROWS;
+        /* rect 高度是 border-box（含 padding），网格行轨道只占内容盒；
+           computed padding 是布局值，参与 rect 混算前同样要乘 zoom。 */
+        const padY = ((parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0)) * zoom;
+        const rowH = (gridEl.getBoundingClientRect().height - padY - (GRID_ROWS - 1) * rowGap) / GRID_ROWS;
         grabCellCol = Math.floor((clientX - rect.left) / (colW + colGap));
         grabCellRow = Math.floor((clientY - rect.top) / (rowH + rowGap));
       }
@@ -2930,7 +2936,13 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#121110;color:rgb
 
       const computed = window.getComputedStyle(gridEl);
       const rowGap = Number.parseFloat(computed.rowGap || "0");
-      const gridHeight = gridEl.getBoundingClientRect().height;
+      /* rect 高度是 border-box（含 padding），网格行轨道只占内容盒；
+         padding-bottom（--home-grid-bottom-trim）不减掉会让 --slot-row-step
+         虚高 padding/6，跨行组件随之比图标行低。 */
+      const padY =
+        (Number.parseFloat(computed.paddingTop || "0") || 0) +
+        (Number.parseFloat(computed.paddingBottom || "0") || 0);
+      const gridHeight = gridEl.getBoundingClientRect().height - padY;
       const rowHeight = (gridHeight - (GRID_ROWS - 1) * rowGap) / GRID_ROWS;
       const nextRowStep = rowHeight + rowGap;
       if (nextRowStep <= 0) {
