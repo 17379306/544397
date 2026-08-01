@@ -18,7 +18,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: "float",
   description: "float",
-  manifest: "/manifest.webmanifest",
+  manifest: "/manifest.json",
   applicationName: "float",
   appleWebApp: {
     capable: true,
